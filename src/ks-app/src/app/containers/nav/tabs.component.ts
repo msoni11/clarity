@@ -4,7 +4,9 @@
  * The full license information can be found in LICENSE in the root directory of this project.
  */
 
-import {Component} from "@angular/core";
+import { Component } from '@angular/core';
 
-@Component({templateUrl: "./tabs.component.html"})
-export class KSTabs { inOverflow: boolean = false; }
+@Component({ templateUrl: './tabs.component.html' })
+export class KSTabs {
+  inOverflow: boolean = false;
+}

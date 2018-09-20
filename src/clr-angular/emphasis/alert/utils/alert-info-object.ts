@@ -5,6 +5,7 @@
  */
 
 export interface AlertInfoObject {
-    shape: string;
-    cssClass: string;
+  shape: string;
+  cssClass: string;
+  title: string;
 }

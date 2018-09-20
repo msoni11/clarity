@@ -4,62 +4,138 @@
  * The full license information can be found in LICENSE in the root directory of this project.
  */
 
-import {Component, ViewChild} from "@angular/core";
-import {ComponentFixture, TestBed} from "@angular/core/testing";
+import { Component, ViewChild } from '@angular/core';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
-import {ClrLoadingModule} from "../../utils/loading/loading.module";
+import { ClrLoadingState } from '../../utils/loading/loading';
+import { ClrLoadingModule } from '../../utils/loading/loading.module';
 
-import {ClrLoadingButton} from "./loading-button";
-import {ClrLoadingButtonModule} from "./loading-button.module";
+import { ClrLoadingButton } from './loading-button';
+import { ClrLoadingButtonModule } from './loading-button.module';
 
-describe("Loading Buttons", () => {
-    let fixture: ComponentFixture<TestLoadingButtonComponent>;
-    let componentInstance: TestLoadingButtonComponent;
+describe('Loading Buttons', () => {
+  let fixture: ComponentFixture<TestLoadingButtonComponent>;
 
-    beforeEach(() => {
-        TestBed.configureTestingModule(
-            {imports: [ClrLoadingModule, ClrLoadingButtonModule], declarations: [TestLoadingButtonComponent]});
-
-        fixture = TestBed.createComponent(TestLoadingButtonComponent);
-        componentInstance = fixture.componentInstance;
-
-        fixture.detectChanges();
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [ClrLoadingModule, ClrLoadingButtonModule, NoopAnimationsModule],
+      declarations: [TestLoadingButtonComponent],
     });
 
-    afterEach(() => {
-        fixture.destroy();
-    });
+    fixture = TestBed.createComponent(TestLoadingButtonComponent);
 
-    it("implements LoadingListener", () => {
-        const instance: ClrLoadingButton = fixture.componentInstance.loadingButtonInstance;
+    fixture.detectChanges();
+  });
 
-        instance.startLoading();
-        expect(instance.loading).toBe(true);
+  afterEach(() => {
+    fixture.destroy();
+  });
 
-        instance.doneLoading();
-        expect(instance.loading).toBe(false);
-    });
+  it('displays spinner when [(clrButtonState)] value is LOADING', () => {
+    fixture.componentInstance.buttonState = ClrLoadingState.LOADING;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.spinner')).toBeTruthy();
+  });
 
-    it("displays spinner when [clrLoading] value is true", () => {
-        fixture.componentInstance.flag = true;
-        fixture.detectChanges();
-        expect(fixture.nativeElement.querySelector(".spinner")).toBeTruthy();
-    });
+  it(
+    'sets the state back to DEFAULT when [(clrButtonState)] value is VALIDATED',
+    fakeAsync(() => {
+      fixture.componentInstance.buttonState = ClrLoadingState.SUCCESS;
+      fixture.detectChanges();
+      expect(fixture.componentInstance.buttonState).toEqual(ClrLoadingState.SUCCESS);
 
-    it("hides spinner when [clrLoading] value is false", () => {
-        fixture.componentInstance.flag = false;
-        fixture.detectChanges();
-        expect(fixture.nativeElement.querySelector(".spinner")).toBeFalsy();
-    });
+      tick(1000);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.buttonState).toEqual(ClrLoadingState.DEFAULT);
+    })
+  );
+
+  it(
+    'sets the disabled state back to value defined in disabled input',
+    fakeAsync(() => {
+      fixture.componentInstance.disabled = true;
+      fixture.detectChanges();
+
+      fixture.componentInstance.buttonState = ClrLoadingState.LOADING;
+      fixture.detectChanges();
+      expect(fixture.componentInstance.buttonState).toEqual(ClrLoadingState.LOADING);
+      expect(fixture.componentInstance.loadingButtonInstance.el.nativeElement.attributes.disabled).toBeTruthy();
+
+      fixture.componentInstance.buttonState = ClrLoadingState.SUCCESS;
+      fixture.detectChanges();
+      expect(fixture.componentInstance.buttonState).toEqual(ClrLoadingState.SUCCESS);
+      expect(fixture.componentInstance.loadingButtonInstance.el.nativeElement.attributes.disabled).toBeTruthy();
+
+      tick(1000);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.buttonState).toEqual(ClrLoadingState.DEFAULT);
+      expect(fixture.componentInstance.loadingButtonInstance.el.nativeElement.attributes.disabled).toBeTruthy();
+
+      // now the input binding sets the disabled to false
+      // it should be disabled while loading, and success, but change back to not disabled when it goes back to DEFAULT
+      fixture.componentInstance.disabled = false;
+      fixture.detectChanges();
+
+      fixture.componentInstance.buttonState = ClrLoadingState.LOADING;
+      fixture.detectChanges();
+      expect(fixture.componentInstance.buttonState).toEqual(ClrLoadingState.LOADING);
+      expect(fixture.componentInstance.loadingButtonInstance.el.nativeElement.attributes.disabled).toBeTruthy();
+
+      fixture.componentInstance.buttonState = ClrLoadingState.SUCCESS;
+      fixture.detectChanges();
+      expect(fixture.componentInstance.buttonState).toEqual(ClrLoadingState.SUCCESS);
+      expect(fixture.componentInstance.loadingButtonInstance.el.nativeElement.attributes.disabled).toBeTruthy();
+
+      tick(1000);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.buttonState).toEqual(ClrLoadingState.DEFAULT);
+      expect(fixture.componentInstance.loadingButtonInstance.el.nativeElement.attributes.disabled).toBeFalsy();
+    })
+  );
+
+  it(
+    'sets an explicit width value of the button when [(clrButtonState)] value is set to LOADING or SUCCESS',
+    fakeAsync(() => {
+      let style = fixture.componentInstance.loadingButtonInstance.el.nativeElement.attributes.style;
+      expect(style).toBeFalsy();
+
+      fixture.componentInstance.buttonState = ClrLoadingState.LOADING;
+      fixture.detectChanges();
+      style = fixture.componentInstance.loadingButtonInstance.el.nativeElement.attributes.style;
+      expect(style).toBeTruthy();
+      expect(style.value).toMatch(/width:*/);
+
+      fixture.componentInstance.buttonState = ClrLoadingState.SUCCESS;
+      fixture.detectChanges();
+      style = fixture.componentInstance.loadingButtonInstance.el.nativeElement.attributes.style;
+      expect(style).toBeTruthy();
+      expect(style.value).toMatch(/width:*/);
+
+      tick(1000);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.buttonState).toEqual(ClrLoadingState.DEFAULT);
+      style = fixture.componentInstance.loadingButtonInstance.el.nativeElement.attributes.style;
+      // here, we check to see if style.value is falsy instead of style, because even though the style is cleared the attribute remains
+      expect(style.value).toBeFalsy();
+    })
+  );
+
+  it('hides spinner when [(clrButtonState)] value is DEFAULT', () => {
+    fixture.componentInstance.buttonState = ClrLoadingState.DEFAULT;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.spinner')).toBeFalsy();
+  });
 });
 
 @Component({
-    template: `
-        <button [clrLoading]="flag" id="testBtn">Test 1</button>
-    `
+  template: `
+        <button [(clrLoading)]="buttonState" id="testBtn" [disabled]="disabled">Test 1</button>
+    `,
 })
 class TestLoadingButtonComponent {
-    @ViewChild(ClrLoadingButton) loadingButtonInstance: ClrLoadingButton;
+  @ViewChild(ClrLoadingButton) loadingButtonInstance: ClrLoadingButton;
 
-    flag: boolean = false;
+  buttonState: ClrLoadingState = ClrLoadingState.DEFAULT;
+  disabled: boolean = false;
 }

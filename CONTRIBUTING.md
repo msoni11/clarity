@@ -1,136 +1,65 @@
 # Contributing to Clarity
-The Clarity project team welcomes contributions from the community.   Together, we can grow Clarity and make it a better framework.
 
-## Contribution Guidelines
+The Clarity project team welcomes contributions from the community. Together, we can grow Clarity and make it a better framework.
 
-Before you start working with Clarity, please complete the following steps:
+Before you contribute in any way to Clarity, please make sure to read our [code of conduct](/CODE_OF_CONDUCT.md).
 
-- Read our [code of conduct](/CODE_OF_CONDUCT.md).
-- Read our [Developer Certificate of Origin](https://cla.vmware.com/dco). All contributions to this repository must be signed as described on that page. Your signature certifies that you wrote the patch or have the right to pass it on as an open-source patch.
-- Read our [coding guidelines](/CODING_GUIDELINES.md).
+## Types of contribution
 
-## Contribution Flow
+Because Clarity provides everything from the abstract patterns of a design system to the nitty-gritty implementation of
+accessibility for Angular components, contributions to Clarity can take many forms, and each of them will correspond
+to part of the full process. Generally speaking, contributions fit into one or more of these categories:
 
-Here are the typical steps in a contributor's workflow:
+* New design or update to an existing one: general patterns, components, features, ... See
+  [Contributing to Design](#contributing-to-design).
+* Implementation of an existing design and bug fixes (which might involve a design). See
+  [Contributing to Development](#contributing-to-development).
+* Documentation. See [Contributing to Documentation](#contributing-to-documentation).
 
-- [Fork](https://help.github.com/articles/fork-a-repo/) the main Clarity repository.
-- Clone your fork and set the upstream remote to the main Clarity repository.
-- Set your name and e-mail in the Git configuration for signing.
-- Create a topic branch from where you want to base your work.
-- Setup your local environment to run and build Clarity. See our [build documentation](BUILD.md).
-- Make commits of logical units.
-- Make sure `npm test` passes for each of them.
-- Make sure `npm run clang:check` passes for each of them. If not, you can run `npm run clang:format` to format your code.
-- Make sure `npm run tslint:check` passes for each of them. If not, you can run `npm run tslint:fix` to try to auto-fix some of them.
-For certain lint failures you will have to fix them manually.
-- Make sure your commit messages are in the proper format (see below).
-- Push your changes to a topic branch in your fork of the repository.
-- [Submit a pull request](https://help.github.com/articles/about-pull-requests/).
+Many contributions can fall into more than one of these categories at once but it's important to split the contribution
+along these steps, to make sure each of them is solid before moving on to the next.
+For instance, if you want to contribute a brand new Angular component to Clarity you'll first need to go through a
+design submission step, then you can move to the development contribution process once the design has been finalized,
+and finally you can add the corresponding documentation to the website
+(that step is strongly recommended but optional, we know how it is...).
 
-Example:
+## Contributing to Design
 
-``` shell
-# Clone your forked repository
-git clone git@github.com:<github username>/clarity.git
+[TODO with Red]
 
-# Navigate to the directory
-cd clarity
+* Explain the use case
+* Provide designs for the usual case
+* Provide error states
+* Edge cases
+* i18n/long text visuals
+* Example with scrollbars for Windows devices
+* Accessibility recommendation (tab order, keyboard navigation, ...)
+* Describe motion if needed or provide a GIF for it
 
-# Set name and e-mail configuration
-git config user.name "John Doe"
-git config user.email johndoe@example.com
+## Contributing to Development
 
-# Setup the upstream remote
-git remote add upstream https://github.com/vmware/clarity.git
+Barring exceptionally small contributions like one-line bug fixes, please follow the process described in
+[DEVELOPMENT_CONTRIBUTION.md](/DEVELOPMENT_CONTRIBUTION.md).
 
-# Create a topic branch for your changes
-git checkout -b my-new-feature master
+## Contributing to Documentation
 
-# After making the desired changes, test, commit and push to your fork
-npm test
-git commit -a -s
-git push origin my-new-feature
-```
-
-### Staying In Sync With Upstream
-
-When your branch gets out of sync with the master branch, use the following to update:
-
-``` shell
-git checkout my-new-feature
-git fetch -a
-git pull --rebase upstream master
-git push --force-with-lease origin my-new-feature
-```
-
-### Updating Pull Requests
-
-If your PR fails to pass CI, or requires changes based on code review, you'll most likely want to squash these changes into existing commits.
-
-If your pull request contains a single commit, or your changes are related to the most recent commit, you can amend the commit.
-
-``` shell
-git add .
-git commit --amend
-git push --force-with-lease origin my-new-feature
-```
-
-If you need to squash changes into an earlier commit, use the following:
-
-``` shell
-git add .
-git commit --fixup <commit>
-git rebase -i --autosquash master
-git push --force-with-lease origin my-new-feature
-```
-
-Make sure you add a comment to the PR indicating that your changes are ready to review. GitHub does not generate a notification when you use git push.
-
-### Formatting Commit Messages
-
-Use this format for your commit message:
-
-```
-[<type>] <title>
-<BLANK LINE>
-<detailed commit message>
-<BLANK LINE>
-<reference to closing an issue>
-<BLANK LINE>
-Signed-off-by: Your Name <your.email@example.com>
-```
-
-#### Type
-
-Type must be one of the following:
-
-* `UX`: Research and design principles. These are typically documentation commits.
-* `ICON`: Implementation of Clarity's Custom Element icons.
-* `UI`: Implementation of Clarity's static styles, its general look-and-feel.
-* `NG`: Implementation of Clarity's Angular components.
-* `CORE`: Website, distribution, build script and tooling.
-
-#### Writing Guidelines
-
-These documents provide guidance creating a well-crafted commit message:
-
- * [How to Write a Git Commit Message](http://chris.beams.io/posts/git-commit/)
- * [Closing Issues Via Commit Messages](https://help.github.com/articles/closing-issues-via-commit-messages/)
-
-#### Contributing to Documentation
-
-The [Clarity documentation website](https://vmware.github.io/clarity/documentation) is also housed in this repository under the `new-website` branch.  You can contribute to the documentation by submitting pull requests against that branch.
-
-The documentation website is written in Angular using angular-cli.  You can serve the documentation by [installing](https://github.com/angular/angular-cli#installation) angular-cli, checking out the `new-website` branch, and running `npm start`.   
+The [Clarity documentation website](https://vmware.github.io/clarity) is also in this repository in the `website`
+branch. You can contribute to the documentation by submitting pull requests against that branch. Details about how to
+setup and run the website locally can be found on the wiki at
+https://github.com/vmware/clarity/wiki/Building-the-Website.
+Please note that for larger contributions to the website, you will need to follow the
+[development contribution process](/DEVELOPMENT_CONTRIBUTION.md) too.
 
 ## Reporting Bugs and Creating Issues
 
-You can submit an issue or a bug to our [GitHub repository](https://github.com/vmware/clarity/issues).  You must provide:
+You can submit an issue or a bug to our [GitHub repository](https://github.com/vmware/clarity/issues). You must provide:
 
 * The link to the reproduction scenario you created using one of the Clarity Plunker Templates
 * If possible please provide a minimal demo illustrating the issue by forking one of the Clarity Plunker Templates
-  - Clarity Version: [Latest - 0.9.x](https://plnkr.co/uNwwZe)
-  - Clarity Version: [Legacy - 0.8.15](https://plnkr.co/8TwwdL)
+  * [Light Theme v11](https://stackblitz.com/edit/clarity-light-theme-v11)
+  * [Dark Theme v11](https://stackblitz.com/edit/clarity-dark-theme-v11)
+  * [Light Theme v10](https://stackblitz.com/edit/clarity-light-theme-v10)
+  * [Dark Theme v10](https://stackblitz.com/edit/clarity-dark-theme-v10)
 * The version number of Angular
 * The version number of Clarity
 * The browser name and version number

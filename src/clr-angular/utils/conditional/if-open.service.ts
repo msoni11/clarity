@@ -3,9 +3,9 @@
  * This software is released under MIT license.
  * The full license information can be found in LICENSE in the root directory of this project.
  */
-import {Injectable} from "@angular/core";
-import {Observable} from "rxjs/Observable";
-import {Subject} from "rxjs/Subject";
+import { ElementRef, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Subject } from 'rxjs';
 
 @Injectable()
 
@@ -19,68 +19,82 @@ import {Subject} from "rxjs/Subject";
  *
  */
 export class IfOpenService {
-    /********
-     * @property _openChange
-     *
-     * @description
-     * A RXJS Subject that updates and provides subscriptions to for the current open state of a component template
-     * implemting the IfOpen structural directive.
-     */
-    private _openChange: Subject<boolean> = new Subject<boolean>();
+  /********
+   * @property _openChange
+   *
+   * @description
+   * A RXJS Subject that updates and provides subscriptions to for the current open state of a component template
+   * implemting the IfOpen structural directive.
+   */
+  private _openChange: Subject<boolean> = new Subject<boolean>();
 
-    /*********
-     * @property _open
-     *
-     * @description
-     * A property holding the current value for open/closed state of an IfOpen structural directive.
-     *
-     */
-    private _open: boolean;
+  /*********
+   * @property _open
+   *
+   * @description
+   * A property holding the current value for open/closed state of an IfOpen structural directive.
+   *
+   */
+  private _open: boolean;
 
-    /*********
-     *
-     * @description
-     * A getter function that provides an observable for the _opened Subject.
-     *
-     */
-    public get openChange(): Observable<boolean> {
-        return this._openChange.asObservable();
+  /*********
+   *
+   * @description
+   * A getter function that provides an observable for the _opened Subject.
+   *
+   */
+  public get openChange(): Observable<boolean> {
+    return this._openChange.asObservable();
+  }
+
+  /*********
+   *
+   * @description
+   * A setter function that updates the current state of _open for this instance of IfOpen structural directive. And,
+   * broadcasts the new value to all subscribers.
+   *
+   * @param value
+   */
+  public set open(value: boolean) {
+    value = !!value;
+    if (this._open !== value) {
+      this._open = value;
+      this._openChange.next(value);
     }
+  }
 
-    /*********
-     *
-     * @description
-     * A setter function that updates the current state of _open for this instance of IfOpen structural directive. And,
-     * broadcasts the new value to all subscribers.
-     *
-     * @param value
-     */
-    public set open(value: boolean) {
-        value = !!value;
-        if (this._open !== value) {
-            this._open = value;
-            this._openChange.next(value);
-        }
-    }
+  /*********
+   *
+   * @description
+   * A getter that returns the current value of this IfOpen instance.
+   *
+   */
+  public get open(): boolean {
+    return this._open;
+  }
 
-    /*********
-     *
-     * @description
-     * A getter that returns the current value of this IfOpen instance.
-     *
-     */
-    public get open(): boolean {
-        return this._open;
-    }
+  /**
+   * Sometimes, we need to remember the event that triggered the toggling to avoid loops.
+   * This is for instance the case of components that open on a click, but close on a click outside.
+   */
+  public originalEvent: any;
+  public toggleWithEvent(event: any) {
+    this.originalEvent = event;
+    this.open = !this.open;
+    delete this.originalEvent;
+  }
 
-    /**
-     * Sometimes, we need to remember the event that triggered the toggling to avoid loops.
-     * This is for instance the case of components that open on a click, but close on a click outside.
-     */
-    public originalEvent: any;
-    public toggleWithEvent(event: any) {
-        this.originalEvent = event;
-        this.open = !this.open;
-        delete this.originalEvent;
-    }
+  /**
+   *  Popovers might need to ignore click events on an element
+   *  (eg: popover opens on focus on an input field. Clicks should be ignored in this case)
+   */
+  private _ignoredElementChange: Subject<ElementRef> = new Subject<ElementRef>();
+
+  get ignoredElementChange(): Observable<ElementRef> {
+    return this._ignoredElementChange.asObservable();
+  }
+
+  registerIgnoredElement(element: ElementRef) {
+    this._ignoredElementChange.next(element);
+  }
 }

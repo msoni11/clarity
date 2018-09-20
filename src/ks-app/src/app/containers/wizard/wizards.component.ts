@@ -4,47 +4,40 @@
  * The full license information can be found in LICENSE in the root directory of this project.
  */
 
-import {Component, OnInit, ViewChild} from "@angular/core";
-import {Wizard} from "@clr/angular";
-import {WizardPage} from "@clr/angular";
+import { Component, ViewChild } from '@angular/core';
+import {
+  ClrWizard,
+  ClrWizardButton,
+  ClrWizardCustomTags,
+  ClrWizardHeaderAction,
+  ClrWizardPageButtons,
+  ClrWizardPageHeaderActions,
+  ClrWizardPageNavTitle,
+  ClrWizardPageTitle,
+  ClrWizardStepnav,
+} from '@clr/angular';
 
-@Component({templateUrl: "./wizards.component.html"})
-export class KSWizards implements OnInit {
-    // Form Wizard Demo
-    @ViewChild("formWizard") formWizard: Wizard;
-    formOpen: boolean = false;
-    formModel = {name: "", favorite: "", number: ""};
+@Component({ templateUrl: './wizards.component.html' })
+export class KSWizards {
+  /**
+   * @description
+   * These exist so that the exported API from Clarity is tested when ks-app is compiled with --prod.
+   */
+  private aClrWizardStepnav: ClrWizardStepnav;
+  private aClrWizardButton: ClrWizardButton;
+  private aClrWizardHeaderAction: ClrWizardHeaderAction;
+  private aClrWizardCustomTags: ClrWizardCustomTags;
+  private aClrWizardPageTitle: ClrWizardPageTitle;
+  private aClrWizardPageNavTitle: ClrWizardPageNavTitle;
+  private aClrWizardPageButtons: ClrWizardPageButtons;
+  private aClrWizardPageHeaderActions: ClrWizardPageHeaderActions;
 
-    // Ghosts demo
-    @ViewChild("ghostWizard") ghostWizard: Wizard;
-    ghostModel: any;
-    ghostOpen: boolean = false;
-    typesOfPages = ["All", "Odd", "First and even", "First and last"];
+  // Form Wizard Demo
+  @ViewChild('formWizard') formWizard: ClrWizard;
+  formOpen: boolean = false;
+  formModel = { name: '', favorite: '', number: '' };
 
-    get isAll(): boolean {
-        return this.ghostModel.typesOfPages === "" || this.ghostModel.typesOfPages === "All" ||
-            this.ghostModel.typesOfPages === null;
-    }
-
-    get showEvenPages(): boolean {
-        return this.isAll || this.ghostModel.typesOfPages === "First and even";
-    }
-
-    get showPageThree(): boolean {
-        return this.isAll || this.ghostModel.typesOfPages === "Odd";
-    }
-
-    get showPageFive(): boolean {
-        return this.isAll || this.ghostModel.typesOfPages === "Odd" ||
-            this.ghostModel.typesOfPages === "First and last";
-    }
-
-    // inlineWizard demo
-    @ViewChild("inlineWizard") inlineWizard: Wizard;
-    inlineOpen: boolean = false;
-
-    ngOnInit() {
-        // For ghosts demo
-        this.ghostModel = {typesOfPages: ""};
-    }
+  // inlineWizard demo
+  @ViewChild('inlineWizard') inlineWizard: ClrWizard;
+  inlineOpen: boolean = false;
 }

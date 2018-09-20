@@ -4,36 +4,59 @@
  * The full license information can be found in LICENSE in the root directory of this project.
  */
 
-import {Component} from "@angular/core";
-import {VerticalNavCases} from "./vertical-nav-cases";
+import { Component } from '@angular/core';
+import {
+  ClrHeader,
+  ClrNavLevel,
+  ClrVerticalNav,
+  ClrVerticalNavGroup,
+  ClrVerticalNavGroupChildren,
+  ClrVerticalNavIcon,
+  ClrVerticalNavLink,
+} from '@clr/angular';
 
-@Component({templateUrl: "./vertical-nav.component.html", providers: [VerticalNavCases]})
+import { VerticalNavCases } from './vertical-nav-cases';
+
+@Component({ templateUrl: './vertical-nav.component.html', providers: [VerticalNavCases] })
 export class KSVerticalNav {
-    option: string = "link";
+  /**
+   * @description
+   * These exist so that the exported API from Clarity is tested when ks-app is compiled with --prod.
+   * This is a catchall for navigation entities.
+   */
+  private aClrHeader: ClrHeader;
+  private aClrNavLevel: ClrNavLevel;
+  private aClrVerticalNav: ClrVerticalNav;
+  private aClrVerticalNavGroup: ClrVerticalNavGroup;
+  private aClrVerticalNavGroupChildren: ClrVerticalNavGroupChildren;
+  private aClrVerticalNavIcon: ClrVerticalNavIcon;
+  private aClrVerticalNavLink: ClrVerticalNavLink;
 
-    case: any;
+  option: string = 'link';
 
-    groupExpand: boolean = true;
+  case: any;
 
-    updateGroupExpand(event: any) {
-        this.groupExpand = event;
-    }
+  groupExpand: boolean = true;
 
-    navCollapsed: boolean = false;
+  updateGroupExpand(event: any) {
+    this.groupExpand = event;
+  }
 
-    updateNavCollapsed(val: boolean): void {
-        this.navCollapsed = val;
-    }
+  navCollapsed: boolean = false;
 
-    toggleNav(): void {
-        this.navCollapsed = !this.navCollapsed;
-    }
+  updateNavCollapsed(val: boolean): void {
+    this.navCollapsed = val;
+  }
 
-    toggleGroup(): void {
-        this.groupExpand = !this.groupExpand;
-    }
+  toggleNav(): void {
+    this.navCollapsed = !this.navCollapsed;
+  }
 
-    constructor(public verticalNavCases: VerticalNavCases) {
-        this.case = this.verticalNavCases.allNestedIconMenu;
-    }
+  toggleGroup(): void {
+    this.groupExpand = !this.groupExpand;
+  }
+
+  constructor(public verticalNavCases: VerticalNavCases) {
+    this.case = this.verticalNavCases.allNestedIconMenu;
+  }
 }

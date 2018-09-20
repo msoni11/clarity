@@ -1,23 +1,22 @@
-/*
+/**
  * Copyright (c) 2016-2018 VMware, Inc. All Rights Reserved.
  * This software is released under MIT license.
  * The full license information can be found in LICENSE in the root directory of this project.
  */
 
-import {CommonModule} from "@angular/common";
-import {NgModule, Type} from "@angular/core";
-import {ClrCheckbox} from "./checkbox";
+import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 
-export const CLR_CHECKBOX_DIRECTIVES: Type<any>[] = [ClrCheckbox];
+import { ClrHostWrappingModule } from '../../utils/host-wrapping/host-wrapping.module';
+import { ClrCommonFormsModule } from '../common/common.module';
 
-@NgModule({imports: [CommonModule], declarations: [CLR_CHECKBOX_DIRECTIVES], exports: [CLR_CHECKBOX_DIRECTIVES]})
-export class ClrCheckboxModule {}
+import { ClrCheckboxNext } from './checkbox';
+import { ClrCheckboxContainer } from './checkbox-container';
 
-/* tslint:disable variable-name */
-/** @deprecated since 0.11 */
-export interface Checkbox extends ClrCheckbox {}
-/** @deprecated since 0.11 */
-export const Checkbox = ClrCheckbox;
-/* tslint:enable variable-name */
-/** @deprecated since 0.11 */
-export const CHECKBOX_DIRECTIVES = CLR_CHECKBOX_DIRECTIVES;
+@NgModule({
+  imports: [CommonModule, ClrCommonFormsModule, ClrHostWrappingModule],
+  declarations: [ClrCheckboxNext, ClrCheckboxContainer],
+  exports: [ClrCommonFormsModule, ClrCheckboxNext, ClrCheckboxContainer],
+  entryComponents: [ClrCheckboxContainer],
+})
+export class ClrCheckboxNextModule {}
