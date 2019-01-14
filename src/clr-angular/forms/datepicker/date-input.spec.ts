@@ -4,16 +4,20 @@
  * The full license information can be found in LICENSE in the root directory of this project.
  */
 
-import { Component, DebugElement, ViewChild } from '@angular/core';
+import { Component, DebugElement, Injectable, ViewChild } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { FormControl, FormGroup, FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, NgControl, NgForm, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 
 import { itIgnore } from '../../../../tests/tests.helpers';
 import { TestContext } from '../../data/datagrid/helpers.spec';
-import { ClrFormsModule } from '../../forms-deprecated/forms.module';
+import { ClrFormsDeprecatedModule } from '../../forms-deprecated/forms.module';
 import { IfOpenService } from '../../utils/conditional/if-open.service';
+import { IfErrorService } from '../common/if-error/if-error.service';
+import { ControlClassService } from '../common/providers/control-class.service';
 import { ControlIdService } from '../common/providers/control-id.service';
+import { FocusService } from '../common/providers/focus.service';
+import { NgControlService } from '../common/providers/ng-control.service';
 
 import { ClrDateContainer } from './date-container';
 import { ClrDateInput } from './date-input';
@@ -24,6 +28,7 @@ import { DateNavigationService } from './providers/date-navigation.service';
 import { DatepickerEnabledService } from './providers/datepicker-enabled.service';
 import { MockDatepickerEnabledService } from './providers/datepicker-enabled.service.mock';
 import { LocaleHelperService } from './providers/locale-helper.service';
+import { DatepickerFocusService } from './providers/datepicker-focus.service';
 
 export default function() {
   describe('Date Input Component', () => {
@@ -32,24 +37,40 @@ export default function() {
     let dateIOService: DateIOService;
     let dateNavigationService: DateNavigationService;
     let dateFormControlService: DateFormControlService;
+    let ifErrorService: IfErrorService;
+    let focusService: FocusService;
+    let controlClassService: ControlClassService;
+    let datepickerFocusService: DatepickerFocusService;
+    const setControlSpy = jasmine.createSpy();
+
+    @Injectable()
+    class MockNgControlService extends NgControlService {
+      // @ts-ignore
+      setControl = setControlSpy;
+    }
 
     describe('Basics', () => {
       beforeEach(function() {
         TestBed.overrideComponent(ClrDateContainer, {
           set: {
-            providers: [
-              { provide: DatepickerEnabledService, useClass: MockDatepickerEnabledService },
-              IfOpenService,
-              DateNavigationService,
-              LocaleHelperService,
-              DateIOService,
-              ControlIdService,
-              DateFormControlService,
-            ],
+            providers: [{ provide: DatepickerEnabledService, useClass: MockDatepickerEnabledService }],
           },
         });
 
-        context = this.create(ClrDateInput, TestComponent, []);
+        context = this.create(ClrDateInput, TestComponent, [
+          ControlClassService,
+          { provide: NgControlService, useClass: MockNgControlService },
+          NgControl,
+          IfErrorService,
+          IfOpenService,
+          FocusService,
+          DatepickerFocusService,
+          DateNavigationService,
+          LocaleHelperService,
+          DateIOService,
+          ControlIdService,
+          DateFormControlService,
+        ]);
 
         enabledService = <MockDatepickerEnabledService>context.fixture.debugElement
           .query(By.directive(ClrDateContainer))
@@ -58,6 +79,65 @@ export default function() {
         dateNavigationService = context.fixture.debugElement
           .query(By.directive(ClrDateContainer))
           .injector.get(DateNavigationService);
+        ifErrorService = context.fixture.debugElement.injector.get(IfErrorService);
+        focusService = context.fixture.debugElement.injector.get(FocusService);
+        controlClassService = context.fixture.debugElement.injector.get(ControlClassService);
+        datepickerFocusService = context.fixture.debugElement.injector.get(DatepickerFocusService);
+
+        spyOn(ifErrorService, 'triggerStatusChange');
+        spyOn(datepickerFocusService, 'focusInput');
+      });
+
+      // @TODO Figure out how to make these tests conform to the rest of the forms tests, which test these already
+      describe('View', () => {
+        beforeEach(() => {
+          context.clarityDirective.newFormsLayout = true;
+          context.detectChanges();
+        });
+
+        it('should apply the correct host classes', () => {
+          expect(context.clarityElement.classList).toContain('clr-input');
+        });
+
+        it('should capture any classes set on the control', () => {
+          expect(controlClassService).toBeTruthy();
+          expect(controlClassService.className).toContain('test-class');
+        });
+
+        it('should set the control on NgControlService', () => {
+          expect(setControlSpy).toHaveBeenCalled();
+        });
+
+        it('should handle focus and blur events', () => {
+          let focusState;
+          const sub = focusService.focusChange.subscribe(state => (focusState = state));
+          expect(focusState).toEqual(false);
+          context.clarityElement.dispatchEvent(new Event('focus'));
+          context.clarityElement.value = 'abc';
+          context.detectChanges();
+          expect(focusState).toEqual(true);
+          context.clarityElement.dispatchEvent(new Event('input'));
+          context.clarityElement.dispatchEvent(new Event('blur'));
+          context.detectChanges();
+          expect(ifErrorService.triggerStatusChange).toHaveBeenCalled();
+          expect(focusState).toEqual(false);
+          sub.unsubscribe();
+        });
+
+        it('should refocus input after selecting a date for a11y', () => {
+          const input: HTMLInputElement = context.testElement.querySelector('input');
+          expect(document.activeElement).not.toBe(input);
+
+          dateNavigationService.notifySelectedDayChanged(new DayModel(2019, 1, 1));
+          context.detectChanges();
+
+          expect(document.activeElement).toBe(input);
+        });
+
+        it('should set override classes and remove them from the control', () => {
+          expect(controlClassService.className).toContain('clr-col-12');
+          expect(context.clarityElement.className).not.toContain('clr-col-12');
+        });
       });
 
       describe('Typescript API', () => {
@@ -112,7 +192,7 @@ export default function() {
           expect(context.testComponent.date.getDate()).toBe(1);
         });
 
-        it('outputs the date when the user changes the date manually in th input', () => {
+        it('outputs the date when the user changes the date manually in the input', () => {
           expect(context.testComponent.date).toBeUndefined();
 
           const input: HTMLInputElement = context.testElement.querySelector('input');
@@ -180,7 +260,7 @@ export default function() {
 
       beforeEach(function() {
         TestBed.configureTestingModule({
-          imports: [FormsModule, ClrFormsModule],
+          imports: [FormsModule, ClrFormsDeprecatedModule],
           declarations: [TestComponentWithNgModel],
         });
 
@@ -223,6 +303,32 @@ export default function() {
         expect(fixture.componentInstance.dateValue).toBe('02/01/2015');
       });
 
+      it(
+        'allows you to reset the model',
+        fakeAsync(() => {
+          fixture.componentInstance.dateValue = '01/02/2015';
+          fixture.detectChanges();
+          tick();
+
+          expect(dateInputDebugElement.nativeElement.value).toBe('01/02/2015');
+          expect(dateNavigationService.selectedDay).toEqual(new DayModel(2015, 0, 2));
+
+          fixture.nativeElement.querySelector('#reset').click();
+          fixture.detectChanges();
+          tick();
+
+          expect(dateInputDebugElement.nativeElement.value).toBe('');
+          expect(dateNavigationService.selectedDay).toEqual(null);
+
+          fixture.componentInstance.dateValue = '01/02/2015';
+          fixture.detectChanges();
+          tick();
+
+          expect(dateInputDebugElement.nativeElement.value).toBe('01/02/2015');
+          expect(dateNavigationService.selectedDay).toEqual(new DayModel(2015, 0, 2));
+        })
+      );
+
       // IE doesn't handle Event constructor
       itIgnore(
         ['ie'],
@@ -247,7 +353,7 @@ export default function() {
 
       beforeEach(function() {
         TestBed.configureTestingModule({
-          imports: [ReactiveFormsModule, ClrFormsModule],
+          imports: [ReactiveFormsModule, ClrFormsDeprecatedModule],
           declarations: [TestComponentWithReactiveForms],
         });
 
@@ -326,7 +432,7 @@ export default function() {
 
       beforeEach(function() {
         TestBed.configureTestingModule({
-          imports: [FormsModule, ClrFormsModule],
+          imports: [FormsModule, ClrFormsDeprecatedModule],
           declarations: [TestComponentWithTemplateDrivenForms],
         });
         fixture = TestBed.createComponent(TestComponentWithTemplateDrivenForms);
@@ -394,7 +500,7 @@ export default function() {
 
       beforeEach(function() {
         TestBed.configureTestingModule({
-          imports: [FormsModule, ClrFormsModule],
+          imports: [FormsModule, ClrFormsDeprecatedModule],
           declarations: [TestComponentWithClrDate],
         });
 
@@ -440,6 +546,22 @@ export default function() {
         expect(fixture.componentInstance.date.getDate()).toBe(date.getDate());
       });
 
+      it('outputs the date appropriately when switching between user updates and programmatic updates', () => {
+        expect(fixture.componentInstance.date).toBeUndefined();
+
+        dateNavigationService.notifySelectedDayChanged(new DayModel(2015, 1, 1));
+        fixture.detectChanges();
+        expect(fixture.componentInstance.date.getFullYear()).toBe(2015);
+
+        fixture.componentInstance.date = new Date(2019, 1, 1);
+        fixture.detectChanges();
+        expect(fixture.componentInstance.date.getFullYear()).toBe(2019);
+
+        dateNavigationService.notifySelectedDayChanged(new DayModel(2015, 1, 1));
+        fixture.detectChanges();
+        expect(fixture.componentInstance.date.getFullYear()).toBe(2015);
+      });
+
       // IE doesn't like event constructors
       itIgnore(['ie'], 'emits the date when the user changes the input', () => {
         dateInputDebugElement.nativeElement.value = '01/02/2015';
@@ -464,7 +586,7 @@ export default function() {
 
 @Component({
   template: `
-        <input type="date" clrDate (clrDateChange)="dateChanged($event)">
+        <input type="date" clrDate (clrDateChange)="dateChanged($event)" class="test-class clr-col-12 clr-col-md-8">
     `,
 })
 class TestComponent {
@@ -477,7 +599,8 @@ class TestComponent {
 
 @Component({
   template: `
-        <input type="date" clrDate [(ngModel)]="dateValue">
+        <input type="date" clrDate [(ngModel)]="dateValue" #picker="ngModel">
+        <button id="reset" (click)="picker.reset()">Reset</button>
     `,
 })
 class TestComponentWithNgModel {

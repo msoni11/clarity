@@ -110,7 +110,7 @@ describe('ClarityIcons', () => {
                 { "shape-name": "shape-template" }`;
 
       expect(() => {
-        ClarityIcons.add();
+        ClarityIcons.add(<any>'');
       }).toThrowError(expectedErrorMessage);
     });
 

@@ -8,6 +8,16 @@ var WAIT_TIME = 5000;
 var WAIT_LOAD_TIME = 1000;
 
 gemini.suite('datepicker', child => {
+  gemini.suite('layout', child => {
+    child
+      .setUrl('/datepicker/layout')
+      .before((actions, find) => {
+        actions.waitForElementToShow('.clr-input-wrapper');
+      })
+      .setCaptureElements('.content-area')
+      .capture('default');
+  });
+
   gemini.suite('no-input', child => {
     child
       .setUrl('/datepicker/css-regression')
@@ -15,7 +25,18 @@ gemini.suite('datepicker', child => {
         actions.waitForElementToShow('.clr-example-1', WAIT_TIME);
         actions.wait(WAIT_LOAD_TIME);
       })
-      .setCaptureElements('.clr-example-1 .date-input')
+      .setCaptureElements('.clr-example-1 .clr-input')
+      .capture('default');
+  });
+
+  gemini.suite('disabled', child => {
+    child
+      .setUrl('/datepicker/disabled')
+      .before((actions, find) => {
+        actions.waitForElementToShow('[clrForm]', WAIT_TIME);
+        actions.wait(WAIT_LOAD_TIME);
+      })
+      .setCaptureElements('[clrForm]')
       .capture('default');
   });
 
@@ -27,7 +48,7 @@ gemini.suite('datepicker', child => {
         actions.wait(WAIT_LOAD_TIME);
         this.trigger = find('.clr-example-2 .datepicker-trigger');
       })
-      .setCaptureElements('.clr-example-input')
+      .setCaptureElements('.clr-example-2')
       .capture('default')
       .capture('trigger-hovered', (actions, find) => {
         actions.mouseMove(this.trigger);
@@ -84,6 +105,20 @@ gemini.suite('datepicker', child => {
         actions.wait(WAIT_LOAD_TIME);
       })
       .setCaptureElements('.clr-example-2')
+      .capture('default');
+  });
+
+  gemini.suite('datepicker nested in table', child => {
+    child
+      .setUrl('/datepicker/css-regression')
+      .before((actions, find) => {
+        actions.waitForElementToShow('.clr-example-3', WAIT_TIME);
+        actions.wait(WAIT_LOAD_TIME);
+        this.trigger = find('.clr-example-3 .datepicker-trigger');
+        actions.click(this.trigger);
+        actions.wait(WAIT_LOAD_TIME);
+      })
+      .setCaptureElements('.clr-example-3')
       .capture('default');
   });
 });

@@ -3,30 +3,65 @@
  * This software is released under MIT license.
  * The full license information can be found in LICENSE in the root directory of this project.
  */
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; // Needed to recreate issue #1084
-
+import { DatagridRenderStep } from '../enums/render-step.enum';
 import { ClrDatagridModule } from '../datagrid.module';
 import { TestContext } from '../helpers.spec';
-import { Page } from '../providers/page';
 
 import { DatagridHeaderRenderer } from './header-renderer';
 import { DatagridMainRenderer } from './main-renderer';
 import { DatagridRenderOrganizer } from './render-organizer';
+import { MockDatagridRenderOrganizer } from './render-organizer.mock';
+import { DisplayModeService } from '../providers/display-mode.service';
+import { StateDebouncer } from '../providers/state-debouncer.provider';
+import { Page } from '../providers/page';
+import { ExpandableRowsCount } from '../providers/global-expandable-rows';
+import { HideableColumnService } from '../providers/hideable-column.service';
+import { Selection } from '../providers/selection';
+import { RowActionService } from '../providers/row-action-service';
+import { FiltersProvider } from '../providers/filters';
+import { Sort } from '../providers/sort';
+import { Items } from '../providers/items';
+import { TableSizeService } from '../providers/table-size.service';
+import { ColumnToggleButtonsService } from '../providers/column-toggle-buttons.service';
+import { StateProvider } from '../providers/state.provider';
+import { DomAdapter } from '../../../utils/dom-adapter/dom-adapter';
+
+const PROVIDERS = [
+  DisplayModeService,
+  Selection,
+  Sort,
+  FiltersProvider,
+  Page,
+  Items,
+  {
+    provide: DatagridRenderOrganizer,
+    useClass: MockDatagridRenderOrganizer,
+  },
+  RowActionService,
+  ExpandableRowsCount,
+  HideableColumnService,
+  StateDebouncer,
+  StateProvider,
+  ColumnToggleButtonsService,
+  TableSizeService,
+  DomAdapter,
+];
 
 export default function(): void {
   describe('DatagridMainRenderer directive', function() {
     describe('static loading', function() {
       let context: TestContext<DatagridMainRenderer<number>, StaticTest>;
-      let organizer: DatagridRenderOrganizer;
+      let organizer: MockDatagridRenderOrganizer;
       let resizeSpy: jasmine.Spy;
       let computeWidthSpy: jasmine.Spy;
 
       beforeEach(function() {
         resizeSpy = spyOn(DatagridRenderOrganizer.prototype, 'resize');
-        context = this.create(DatagridMainRenderer, StaticTest);
-        organizer = context.getClarityProvider(DatagridRenderOrganizer);
+        context = this.createWithOverride(DatagridMainRenderer, StaticTest, [], [], PROVIDERS);
+        organizer = <MockDatagridRenderOrganizer>context.getClarityProvider(DatagridRenderOrganizer);
         computeWidthSpy = spyOn(DatagridHeaderRenderer.prototype, 'computeWidth');
       });
 
@@ -59,14 +94,14 @@ export default function(): void {
       it('computes the widths of the columns when notified', function() {
         expect(computeWidthSpy.calls.count()).toBe(0);
         // Too lazy to do something other than casting right now.
-        (<any>organizer)._computeWidths.next();
+        organizer.updateRenderStep.next(DatagridRenderStep.COMPUTE_COLUMN_WIDTHS);
         expect(computeWidthSpy.calls.count()).toBe(context.clarityDirective.headers.length);
       });
 
       it('sets the widths of the columns for the other components', function() {
         expect(organizer.widths.length).toBe(0);
         // Too lazy to do something other than casting right now.
-        (<any>organizer)._computeWidths.next();
+        organizer.updateRenderStep.next(DatagridRenderStep.COMPUTE_COLUMN_WIDTHS);
         expect(organizer.widths.length).toBe(context.clarityDirective.headers.length);
       });
     });
@@ -104,6 +139,58 @@ export default function(): void {
         context.testComponent.clrDgItems = [1];
         context.detectChanges();
         expect(resizeSpy.calls.count()).toBe(1);
+      });
+    });
+
+    describe('smart datagrid width', () => {
+      let context: ComponentFixture<RenderWidthTest>;
+      let containerWidth: number;
+      beforeEach(() => {
+        TestBed.configureTestingModule({
+          imports: [BrowserAnimationsModule, ClrDatagridModule],
+          declarations: [RenderWidthTest],
+          providers: PROVIDERS,
+        });
+        context = TestBed.createComponent(RenderWidthTest);
+        context.detectChanges();
+        containerWidth = context.componentInstance.container.nativeElement.clientWidth;
+      });
+
+      it('calculates the correct width with no row options', () => {
+        context.componentInstance.currentTest = 'defaultDatagridTest';
+        context.detectChanges();
+        const datagridWidth = context.componentInstance.datagridDefault.nativeElement.clientWidth;
+        expect(containerWidth).toEqual(datagridWidth);
+      });
+
+      it('calculates the correct width when single select is enabled', () => {
+        context.componentInstance.currentTest = 'singleSelectTest';
+        context.detectChanges();
+        const datagridWidth = context.componentInstance.datagridSingleSelect.nativeElement.clientWidth;
+        expect(containerWidth).toEqual(datagridWidth);
+      });
+
+      it('calculates correct width when multi select is enabled', () => {
+        context.componentInstance.currentTest = 'multiSelectTest';
+        context.detectChanges();
+        const datagridWidth = context.componentInstance.datagridMultiSelect.nativeElement.clientWidth;
+        expect(containerWidth).toEqual(datagridWidth);
+      });
+
+      it('calculates correct width when row is expandable', () => {
+        context.componentInstance.currentTest = 'defaultDatagridTest';
+        context.componentInstance.expandable = true;
+        context.detectChanges();
+        const datagridWidth = context.componentInstance.datagridDefault.nativeElement.clientWidth;
+        expect(containerWidth).toEqual(datagridWidth);
+      });
+
+      it('calculates correct width when row has actions', () => {
+        context.componentInstance.currentTest = 'defaultDatagridTest';
+        context.componentInstance.hasActions = true;
+        context.detectChanges();
+        const datagridWidth = context.componentInstance.datagridDefault.nativeElement.clientWidth;
+        expect(containerWidth).toEqual(datagridWidth);
       });
     });
 
@@ -182,75 +269,85 @@ export default function(): void {
         expect(organizer.widths[1].strict).toBe(false);
       });
     });
-
-    describe('scrollbar spy on page change', () => {
-      let context: TestContext<DatagridMainRenderer<number>, DatagridHeightTest>;
-      let page: Page;
-      let organizer: DatagridRenderOrganizer;
-
-      beforeEach(function() {
-        context = this.create(DatagridMainRenderer, DatagridHeightTest);
-        page = context.getClarityProvider(Page);
-        organizer = context.getClarityProvider(DatagridRenderOrganizer);
-      });
-
-      it('scrollbar spy when the page has changed', () => {
-        let scrollSpyFlag: boolean = false;
-        organizer.scrollbar.subscribe(() => {
-          scrollSpyFlag = true;
-        });
-
-        context.detectChanges();
-        organizer.resize();
-
-        context.fixture.whenStable().then(() => {
-          expect(scrollSpyFlag).toBe(true);
-        });
-
-        scrollSpyFlag = false;
-
-        page.next();
-        context.detectChanges();
-
-        context.fixture.whenStable().then(() => {
-          expect(scrollSpyFlag).toBe(true);
-        });
-      });
-    });
-
-    describe('scrollbar spy on expandable rows', () => {
-      let context: TestContext<DatagridMainRenderer<number>, DatagridScrollbarTest>;
-      let organizer: DatagridRenderOrganizer;
-
-      beforeEach(function() {
-        context = this.create(DatagridMainRenderer, DatagridScrollbarTest);
-        organizer = context.getClarityProvider(DatagridRenderOrganizer);
-      });
-
-      it('adds scrollbar when the rows are expanded', () => {
-        let scrollSpyFlag: boolean = false;
-        organizer.scrollbar.subscribe(() => {
-          scrollSpyFlag = true;
-        });
-
-        context.detectChanges();
-        organizer.resize();
-
-        context.fixture.whenStable().then(() => {
-          expect(scrollSpyFlag).toBe(true);
-        });
-
-        scrollSpyFlag = false;
-
-        context.testComponent.expand = true;
-        context.detectChanges();
-
-        context.fixture.whenStable().then(() => {
-          expect(scrollSpyFlag).toBe(true);
-        });
-      });
-    });
   });
+}
+
+@Component({
+  template: `
+    <div #dgContainer style="width: 232px"> 
+      <!-- 
+        Datagrid side borders = 2px, 
+        action columns are 38px wide, 
+        Columns at min width = 2*96px
+        Total calculated datagrid width should be 232px and not be wider than the div container.
+      -->
+      <ng-template *ngIf="currentTest === 'defaultDatagridTest'" [ngTemplateOutlet]="default"></ng-template>
+      <ng-template *ngIf="currentTest === 'singleSelectTest'" [ngTemplateOutlet]="single"></ng-template>
+      <ng-template *ngIf="currentTest === 'multiSelectTest'" [ngTemplateOutlet]="multi"></ng-template>
+    </div>
+    <ng-template #default>
+      <clr-datagrid #datagridDefault>
+        <clr-dg-column>Column</clr-dg-column>
+        <clr-dg-column>Column</clr-dg-column>
+        <clr-dg-row>
+          <clr-dg-action-overflow *ngIf="hasActions">
+            <button class="action-item" (click)="return;">                
+              Edit
+            </button>
+          </clr-dg-action-overflow>
+          <clr-dg-cell>
+            Value
+            <ng-template [ngIf]="expandable">
+              <clr-dg-row-detail *clrIfExpanded>Detail</clr-dg-row-detail>
+            </ng-template>
+          </clr-dg-cell>
+          <clr-dg-cell>
+            Value
+            <ng-template [ngIf]="expandable">
+              <clr-dg-row-detail *clrIfExpanded>Detail</clr-dg-row-detail>
+            </ng-template>
+          </clr-dg-cell>
+        </clr-dg-row>
+      </clr-datagrid>
+    </ng-template>
+    <ng-template #single>
+      <clr-datagrid #datagridSingleSelect [(clrDgSingleSelected)]='singleSelect'>
+        <clr-dg-column>Column</clr-dg-column>
+        <clr-dg-column>Column</clr-dg-column>
+        <clr-dg-row>
+          <clr-dg-cell>Value</clr-dg-cell>
+          <clr-dg-cell>Value</clr-dg-cell>
+        </clr-dg-row>
+      </clr-datagrid>
+    </ng-template>
+    <ng-template #multi>
+      <clr-datagrid #datagridMultiSelect [(clrDgSelected)]="selected">
+        <clr-dg-column>Column</clr-dg-column>
+        <clr-dg-column>Column</clr-dg-column>
+        <clr-dg-row>
+          <clr-dg-cell>Value</clr-dg-cell>
+          <clr-dg-cell>Value</clr-dg-cell>
+        </clr-dg-row>
+      </clr-datagrid>
+    </ng-template>
+   `,
+})
+
+//
+class RenderWidthTest {
+  currentTest;
+  expandable = false;
+  hasActions = false;
+  selected: any[] = [];
+  singleSelect;
+  @ViewChild('dgContainer', { read: ElementRef })
+  container: ElementRef;
+  @ViewChild('datagridDefault', { read: ElementRef })
+  datagridDefault: ElementRef;
+  @ViewChild('datagridSingleSelect', { read: ElementRef })
+  datagridSingleSelect: ElementRef;
+  @ViewChild('datagridMultiSelect', { read: ElementRef })
+  datagridMultiSelect: ElementRef;
 }
 
 @Component({
@@ -350,28 +447,4 @@ class DatagridHeightTest {
       this.pageSize = 5; // after 3rd click
     }
   }
-}
-
-@Component({
-  template: `
-        <clr-datagrid>
-            <clr-dg-column>Number</clr-dg-column>
-            <clr-dg-row *clrDgItems="let number of numbers">
-                <clr-dg-cell>{{number}}</clr-dg-cell>
-                <clr-dg-row-detail *clrIfExpanded="expand">
-                    Lorem ipsum...
-                </clr-dg-row-detail>
-            </clr-dg-row>
-
-            <clr-dg-footer>
-                <clr-dg-pagination [clrDgPageSize]="pageSize"></clr-dg-pagination>
-            </clr-dg-footer>
-        </clr-datagrid>
-    `,
-})
-class DatagridScrollbarTest {
-  numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
-  pageSize = 5;
-
-  expand: boolean = false;
 }

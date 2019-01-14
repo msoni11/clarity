@@ -7,8 +7,9 @@ import { NgModule } from '@angular/core';
 
 import { ClrButtonModule } from './button/button.module';
 import { ClrDataModule } from './data/data.module';
+import { ClrDragAndDropModule } from './utils/drag-and-drop/drag-and-drop.module';
 import { ClrEmphasisModule } from './emphasis/emphasis.module';
-import { ClrFormsModule } from './forms-deprecated/forms.module';
+import { ClrFormsModule } from './forms/forms.module';
 import { ClrIconModule } from './icon/icon.module';
 import { ClrLayoutModule } from './layout/layout.module';
 import { ClrModalModule } from './modal/modal.module';
@@ -18,8 +19,6 @@ import { ClrIfExpandModule } from './utils/expand/if-expand.module';
 import { ClrFocusTrapModule } from './utils/focus-trap/focus-trap.module';
 import { ClrLoadingModule } from './utils/loading/loading.module';
 import { ClrWizardModule } from './wizard/wizard.module';
-
-import { COMMON_STRINGS_PROVIDER } from './utils/i18n/common-strings.service';
 
 @NgModule({
   exports: [
@@ -36,7 +35,7 @@ import { COMMON_STRINGS_PROVIDER } from './utils/i18n/common-strings.service';
     ClrLayoutModule,
     ClrPopoverModule,
     ClrWizardModule,
+    ClrDragAndDropModule,
   ],
-  providers: [COMMON_STRINGS_PROVIDER],
 })
 export class ClarityModule {}

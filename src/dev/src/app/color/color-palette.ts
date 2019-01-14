@@ -72,7 +72,7 @@ export class ColorPalette {
         { value: '#173a00', text: 'light' },
         { value: '#1d5100', text: 'light' },
         { value: '#266900', text: 'light' },
-        { value: '#318700', text: 'light', corePalette: true },
+        { value: '#2F8400', text: 'light', corePalette: true },
         { value: '#62a420', text: 'mid' },
         { value: '#60b515', text: 'dark' },
         { value: '#92cf5b', text: 'dark' },
@@ -111,7 +111,7 @@ export class ColorPalette {
       colors: [
         { value: '#a32100', text: 'light' },
         { value: '#c92100', text: 'light' },
-        { value: '#e62700', text: 'mid', corePalette: true },
+        { value: '#e12200', text: 'light', corePalette: true },
         { value: '#ebafa6', text: 'dark' },
         { value: '#f5dbd9', text: 'dark' },
       ],

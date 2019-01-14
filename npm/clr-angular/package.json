@@ -3,7 +3,7 @@
   "version": "@VERSION",
   "description": "Angular components for Clarity",
   "es2015": "esm2015/clr-angular.js",
-  "homepage": "https://vmware.github.io/clarity/",
+  "homepage": "https://clarity.design",
   "main": "bundles/clr-angular.umd.js",
   "module": "esm5/clr-angular.js",
   "keywords": [
@@ -17,12 +17,12 @@
     "url": "git@github.com:vmware/clarity.git"
   },
   "peerDependencies": {
-    "@angular/common": "^6.0.0",
-    "@angular/compiler": "^6.0.0",
-    "@angular/core": "^6.0.0",
-    "@angular/forms": "^6.0.0",
-    "@angular/platform-browser": "^6.0.0",
-    "@angular/platform-browser-dynamic": "^6.0.0",
+    "@angular/common": "^7.0.0",
+    "@angular/compiler": "^7.0.0",
+    "@angular/core": "^7.0.0",
+    "@angular/forms": "^7.0.0",
+    "@angular/platform-browser": "^7.0.0",
+    "@angular/platform-browser-dynamic": "^7.0.0",
     "@clr/ui": "@VERSION"
   },
   "author": "clarity",

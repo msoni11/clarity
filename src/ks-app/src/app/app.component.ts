@@ -3,7 +3,7 @@
  * This software is released under MIT license.
  * The full license information can be found in LICENSE in the root directory of this project.
  */
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ClrIconCustomTag, ClrLoading, ClrMainContainer } from '@clr/angular';
 import { ClarityIcons } from '@clr/icons';
 import { ClrShapeStore } from '@clr/icons/shapes/commerce-shapes';
@@ -31,9 +31,9 @@ export class AppComponent {
     { path: 'buttons', title: 'Buttons' },
     { path: 'cards', title: 'Cards' },
     { path: 'checkboxes', title: 'Checkboxes' },
-    { path: 'code', title: 'Code' },
     { path: 'colors', title: 'Colors' },
     { path: 'datagrids', title: 'Datagrid' },
+    { path: 'drag-and-drop', title: 'Drag and Drop' },
     { path: 'datepicker', title: 'Datepicker' },
     { path: 'dropdowns', title: 'Dropdowns' },
     { path: 'forms', title: 'Forms' },
@@ -43,7 +43,8 @@ export class AppComponent {
     { path: 'lists', title: 'Lists' },
     { path: 'login', title: 'Login' },
     { path: 'modals', title: 'Modals' },
-    { path: 'progress-bars', title: 'Progress' },
+    { path: 'passwords', title: 'Passwords' },
+    { path: 'progress-bars', title: 'Progress Bars' },
     { path: 'radios', title: 'Radios' },
     { path: 'selects', title: 'Selects' },
     { path: 'signposts', title: 'Signposts' },
@@ -51,6 +52,7 @@ export class AppComponent {
     { path: 'stackviews', title: 'Stack Views' },
     { path: 'tables', title: 'Tables' },
     { path: 'tabs', title: 'Tabs' },
+    { path: 'textareas', title: 'Textareas' },
     { path: 'tooltips', title: 'Tooltips' },
     { path: 'toggle', title: 'Toggle' },
     { path: 'treeviews', title: 'Tree Views' },
@@ -68,5 +70,11 @@ export class AppComponent {
       car: ClrShapeCar,
       helix: ClrShapeHelix,
     });
+  }
+
+  @ViewChild('main') main: ElementRef;
+
+  skipToContent() {
+    this.main.nativeElement.focus();
   }
 }

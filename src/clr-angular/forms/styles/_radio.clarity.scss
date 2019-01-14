@@ -61,10 +61,14 @@
         box-shadow: $clr-forms-radio-disabled-shadow; //background-color around the dot
       }
     }
+  }
 
-    &.clr-radio-inline {
-      @include form-inline-input();
-    }
+  .clr-error .clr-radio-wrapper input[type='radio'] + label::before {
+    border-color: $clr-forms-invalid-color;
+  }
+
+  .clr-form-compact .clr-error .clr-subtext {
+    margin-left: 0;
   }
 
   .clr-form-compact .clr-radio-wrapper {

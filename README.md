@@ -6,7 +6,7 @@
 
 [![Build Status](https://saucelabs.com/browser-matrix/claritydesignsystem.svg)](https://saucelabs.com/beta/builds/b16110e384ce459ab68f10da6e38a285)
 
-Project Clarity is an open source design system that brings together UX guidelines, an HTML/CSS framework, and Angular components. This repository includes everything you need to build, customize, test, and deploy Clarity. For complete documentation, visit the [Clarity website](https://vmware.github.io/clarity/).
+Project Clarity is an open source design system that brings together UX guidelines, an HTML/CSS framework, and Angular components. This repository includes everything you need to build, customize, test, and deploy Clarity. For complete documentation, visit the [Clarity website](https://clarity.design).
 
 ## Getting Started
 
@@ -116,7 +116,7 @@ If you already have an Angular application, you can follow the installation step
     export class AppModule {    }
     ```
 
-    If your application uses [systemjs](https://github.com/systemjs/systemjs), add the clarity-angular configuration
+    If your application uses [systemjs](https://github.com/systemjs/systemjs), add the configuration
     as in the example below.
 
     ```
@@ -125,6 +125,7 @@ If you already have an Angular application, you can follow the installation step
     	map: {
     	   ...
     	   '@clr/angular': 'node_modules/@clr/angular/bundles/clr-angular.umd.js',
+    	   '@clr/icons': 'node_modules/@clr/icons/bundles/clr-icons.umd.js',
     	},
     	...
     });
@@ -132,7 +133,7 @@ If you already have an Angular application, you can follow the installation step
 
 ## Documentation
 
-For documentation on the Clarity Design System, including a list of components and example usage, see [our website](https://vmware.github.io/clarity).
+For documentation on the Clarity Design System, including a list of components and example usage, see [our website](https://clarity.design).
 
 ## Contributing
 
@@ -148,6 +149,8 @@ The Clarity project team welcomes contributions from the community. For more det
 If you find a bug or want to request a new feature, please open a [GitHub issue](https://github.com/vmware/clarity/issues).
 
 * Include a link to the reproduction scenario you created by forking one of the Clarity Stackblitz Templates:
+  * [Light Theme v0.13](https://stackblitz.com/edit/clarity-light-theme-v013)
+  * [Dark Theme v0.13](https://stackblitz.com/edit/clarity-dark-theme-v013)
   * [Light Theme v0.12](https://stackblitz.com/edit/clarity-light-theme-v012)
   * [Dark Theme v0.12](https://stackblitz.com/edit/clarity-dark-theme-v012)
   * [Light Theme v0.11](https://stackblitz.com/edit/clarity-light-theme-v11)

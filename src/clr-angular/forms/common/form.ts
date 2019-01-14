@@ -6,10 +6,22 @@
 
 import { Directive } from '@angular/core';
 import { LayoutService } from './providers/layout.service';
+import { IS_NEW_FORMS_LAYOUT_TRUE_PROVIDER } from './providers/new-forms.service';
+import { MarkControlService } from './providers/mark-control.service';
 
 @Directive({
   selector: '[clrForm]',
-  providers: [LayoutService],
-  host: { '[class.clr-form]': 'true' },
+  providers: [LayoutService, MarkControlService, IS_NEW_FORMS_LAYOUT_TRUE_PROVIDER],
+  host: {
+    '[class.clr-form]': 'true',
+    '[class.clr-form-horizontal]': 'layoutService.isHorizontal()',
+    '[class.clr-form-compact]': 'layoutService.isCompact()',
+  },
 })
-export class ClrForm {}
+export class ClrForm {
+  constructor(public layoutService: LayoutService, private markControlService: MarkControlService) {}
+
+  markAsDirty() {
+    this.markControlService.markAsDirty();
+  }
+}

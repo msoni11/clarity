@@ -8,7 +8,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ClarityModule, ClrFormsNextModule } from '@clr/angular';
+import { ClarityModule, ClrFormsDeprecatedModule } from '@clr/angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -20,7 +20,7 @@ import { KSColors } from './containers/colors/colors.component';
 import { KSDatagrid } from './containers/data/datagrid.component';
 import { FakeLoader } from './containers/data/fake-loader';
 import { KSStackView } from './containers/data/stackview.component';
-import { KSTreeView } from './containers/data/tree-view.component';
+import { KSDragAndDrop } from './containers/drag-and-drop/dnd.component';
 import { KSAlerts } from './containers/emphasis/alerts.component';
 import { KSBadges } from './containers/emphasis/badges.component';
 import { KSLabels } from './containers/emphasis/labels.component';
@@ -54,6 +54,8 @@ import { KSTables } from './containers/tables/tables.component';
 import { KSTypography } from './containers/typography/typography.component';
 import { KSWizards } from './containers/wizard/wizards.component';
 import { KSToggle } from './containers/forms/toggle.component';
+import { KSPasswords } from './containers/forms/password.component';
+import { KSTextareas } from './containers/forms/textarea.component';
 
 @NgModule({
   declarations: [
@@ -65,7 +67,6 @@ import { KSToggle } from './containers/forms/toggle.component';
     KSColors,
     KSDatagrid,
     KSStackView,
-    KSTreeView,
     KSLabels,
     KSIconSelection,
     KSCheckboxes,
@@ -100,6 +101,9 @@ import { KSToggle } from './containers/forms/toggle.component';
     KSTables,
     KSTooltips,
     KSDatepicker,
+    KSDragAndDrop,
+    KSPasswords,
+    KSTextareas,
   ],
   imports: [
     BrowserModule,
@@ -107,7 +111,7 @@ import { KSToggle } from './containers/forms/toggle.component';
     FormsModule,
     ReactiveFormsModule,
     ClarityModule,
-    ClrFormsNextModule,
+    ClrFormsDeprecatedModule,
     AppRoutingModule,
   ],
   providers: [],

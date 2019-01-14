@@ -8,7 +8,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { ClarityModule, ClrFormsNextModule } from '@clr/angular';
+import { ClarityModule } from '@clr/angular';
 
 import { FormsCheckboxDemo } from './controls/checkbox';
 import { FormsFileDemo } from './controls/file';
@@ -26,11 +26,15 @@ import { FormsLayoutHorizontalGridDemo } from './layout/layout-horizontal-grid';
 import { FormsLayoutModalDemo } from './layout/layout-modal';
 import { FormsLayoutVerticalDemo } from './layout/layout-vertical';
 import { FormsLayoutVerticalGridDemo } from './layout/layout-vertical-grid';
+import { FormsLayoutCompactAngularDemo } from './layout-angular/layout-compact-angular';
+import { FormsLayoutHorizontalAngularDemo } from './layout-angular/layout-horizontal-grid';
+import { FormsLayoutVerticalAngularDemo } from './layout-angular/layout-vertical-grid';
 import { FormsTemplateDrivenDemo } from './template-driven/template-driven';
 import { FormsReactiveDemo } from './reactive/reactive';
+import { FormsResetDemo } from './reset/reset';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, ClarityModule, ClrFormsNextModule, ROUTING],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ClarityModule, ROUTING],
   declarations: [
     FormsDemo,
     FormsInputGroupDemo,
@@ -41,6 +45,9 @@ import { FormsReactiveDemo } from './reactive/reactive';
     FormsLayoutHorizontalGridDemo,
     FormsLayoutCompactGridDemo,
     FormsLayoutModalDemo,
+    FormsLayoutCompactAngularDemo,
+    FormsLayoutHorizontalAngularDemo,
+    FormsLayoutVerticalAngularDemo,
     FormsTextDemo,
     FormsCheckboxDemo,
     FormsFileDemo,
@@ -49,6 +56,7 @@ import { FormsReactiveDemo } from './reactive/reactive';
     FormsTextareaDemo,
     FormsTemplateDrivenDemo,
     FormsReactiveDemo,
+    FormsResetDemo,
   ],
   exports: [
     FormsDemo,
@@ -60,6 +68,9 @@ import { FormsReactiveDemo } from './reactive/reactive';
     FormsLayoutHorizontalGridDemo,
     FormsLayoutCompactGridDemo,
     FormsLayoutModalDemo,
+    FormsLayoutCompactAngularDemo,
+    FormsLayoutHorizontalAngularDemo,
+    FormsLayoutVerticalAngularDemo,
     FormsTextDemo,
     FormsCheckboxDemo,
     FormsFileDemo,
@@ -68,6 +79,7 @@ import { FormsReactiveDemo } from './reactive/reactive';
     FormsTextareaDemo,
     FormsTemplateDrivenDemo,
     FormsReactiveDemo,
+    FormsResetDemo,
   ],
 })
 export class FormsDemoModule {}

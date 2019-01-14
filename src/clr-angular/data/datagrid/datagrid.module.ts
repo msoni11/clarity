@@ -8,12 +8,13 @@ import { CommonModule } from '@angular/common';
 import { NgModule, Type } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-import { ClrFormsNextModule } from '../../forms/forms.module';
+import { ClrFormsModule } from '../../forms/forms.module';
 import { ClrIconModule } from '../../icon/icon.module';
 import { ClrCommonPopoverModule } from '../../popover/common/popover.module';
 import { ClrIfExpandModule } from '../../utils/expand/if-expand.module';
 import { ClrLoadingModule } from '../../utils/loading/loading.module';
 import { ClrOutsideClickModule } from '../../utils/outside-click/outside-click.module';
+import { ClrDragAndDropModule } from '../../utils/drag-and-drop/drag-and-drop.module';
 
 import { DatagridRowExpandAnimation } from './animation-hack/row-expand-animation';
 import { DatagridStringFilter } from './built-in/filters/datagrid-string-filter';
@@ -25,6 +26,7 @@ import { ClrDatagridActionBar } from './datagrid-action-bar';
 import { ClrDatagridActionOverflow } from './datagrid-action-overflow';
 import { ClrDatagridCell } from './datagrid-cell';
 import { ClrDatagridColumn } from './datagrid-column';
+import { ClrDatagridColumnSeparator } from './datagrid-column-separator';
 import { ClrDatagridColumnToggle } from './datagrid-column-toggle';
 import { ClrDatagridColumnToggleButton } from './datagrid-column-toggle-button';
 import { ClrDatagridColumnToggleTitle } from './datagrid-column-toggle-title';
@@ -35,17 +37,17 @@ import { ClrDatagridHideableColumn } from './datagrid-hideable-column';
 import { ClrDatagridItems } from './datagrid-items';
 import { ClrDatagridItemsTrackBy } from './datagrid-items-trackby';
 import { ClrDatagridPagination } from './datagrid-pagination';
+import { ClrDatagridPageSize } from './datagrid-page-size';
 import { ClrDatagridPlaceholder } from './datagrid-placeholder';
 import { ClrDatagridRow } from './datagrid-row';
 import { ClrDatagridRowDetail } from './datagrid-row-detail';
-import { DatagridBodyRenderer } from './render/body-renderer';
 import { DatagridCellRenderer } from './render/cell-renderer';
-import { DatagridColumnResizer } from './render/column-resizer';
-import { DatagridHeadRenderer } from './render/head-renderer';
 import { DatagridHeaderRenderer } from './render/header-renderer';
 import { DatagridMainRenderer } from './render/main-renderer';
 import { DatagridRowRenderer } from './render/row-renderer';
-import { DatagridTableRenderer } from './render/table-renderer';
+import { WrappedCell } from './wrapped-cell';
+import { WrappedColumn } from './wrapped-column';
+import { WrappedRow } from './wrapped-row';
 
 export const CLR_DATAGRID_DIRECTIVES: Type<any>[] = [
   // Core
@@ -53,6 +55,7 @@ export const CLR_DATAGRID_DIRECTIVES: Type<any>[] = [
   ClrDatagridActionBar,
   ClrDatagridActionOverflow,
   ClrDatagridColumn,
+  ClrDatagridColumnSeparator,
   ClrDatagridColumnToggle,
   ClrDatagridHideableColumn,
   ClrDatagridFilter,
@@ -64,17 +67,17 @@ export const CLR_DATAGRID_DIRECTIVES: Type<any>[] = [
   ClrDatagridCell,
   ClrDatagridFooter,
   ClrDatagridPagination,
+  ClrDatagridPageSize,
   ClrDatagridPlaceholder,
   ClrDatagridColumnToggleButton,
   ClrDatagridColumnToggleTitle,
+  WrappedCell,
+  WrappedColumn,
+  WrappedRow,
 
   // Renderers
   DatagridMainRenderer,
-  DatagridTableRenderer,
-  DatagridHeadRenderer,
   DatagridHeaderRenderer,
-  DatagridBodyRenderer,
-  DatagridColumnResizer,
   DatagridRowRenderer,
   DatagridCellRenderer,
 
@@ -94,13 +97,15 @@ export const CLR_DATAGRID_DIRECTIVES: Type<any>[] = [
   imports: [
     CommonModule,
     ClrIconModule,
-    ClrFormsNextModule,
+    ClrFormsModule,
     FormsModule,
     ClrCommonPopoverModule,
     ClrLoadingModule,
     ClrOutsideClickModule,
+    ClrDragAndDropModule,
   ],
   declarations: [CLR_DATAGRID_DIRECTIVES],
   exports: [CLR_DATAGRID_DIRECTIVES, ClrIfExpandModule],
+  entryComponents: [WrappedCell, WrappedColumn, WrappedRow],
 })
 export class ClrDatagridModule {}

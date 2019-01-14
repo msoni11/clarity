@@ -20,12 +20,18 @@ program
   .version('1.0.0')
   .description('A utility for managing Clarity css regression with gemini')
   .option('-t, --test', 'Run a set of css regression tests: cdc -t set1 set2')
+  .option('-c, --configuration <configuration>', 'Define which app configuration to build', null, '')
   .option('-u, --update', 'Generate a set of reference images: cdc -u set1 set2')
   .parse(process.argv);
 
 console.log('Clarity Docker Control for Gemini CSS Regression Testing');
 console.log('--------------------------------------------------------');
 console.log();
+
+// Hacky fix for running light and dark tests through npm-run-all
+if (program.args[0]) {
+  program.args = program.args[0].split(' ');
+}
 
 /**********
  * Run gemini tests based on the args given:
@@ -55,18 +61,20 @@ if (program.update) {
  * @param config
  */
 function runGemini(config) {
-  shell.exec('ng build dev');
+  const ngConfig = program.configuration ? '-c ' + program.configuration : '';
+  shell.exec(`ng build dev ${ngConfig}`);
   let server = shell.exec('node_modules/.bin/lite-server --baseDir=dist/dev', { async: true });
   let status = shell.exec(
     'docker run --rm --name=clarity_chrome -d -p 4444:4444 selenium/standalone-chrome@sha256:b899f16b6d963600ef6da8a8dd49e311146033ed66cb5af71eccb78ab378e19a'
   );
   let geminiStatus = 0;
+  let screensDir = program.configuration ? `./gemini/${program.configuration}-screens` : './gemini/screens';
   if (status.code === 0) {
     config.args.forEach(function(arg) {
       let gemini = shell.exec(
-        `gemini ${
+        `node_modules/.bin/gemini ${
           config.action
-        } gemini/tests/${arg} --html-reporter-path ./reports/gemini/${arg} --root-url ${generateRootUrl()}`
+        } gemini/tests/${arg} --html-reporter-path ./reports/gemini/${arg} --root-url ${generateRootUrl()} --screenshots-dir ${screensDir}`
       ); // TODO: A better way to build string cmds.
       geminiStatus += gemini.code; // add up any non-zero exit codes
     });

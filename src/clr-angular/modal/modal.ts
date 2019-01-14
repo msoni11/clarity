@@ -15,11 +15,13 @@ import {
   Output,
   SimpleChange,
   ViewChild,
+  Inject,
 } from '@angular/core';
 
 import { FocusTrapDirective } from '../utils/focus-trap/focus-trap.directive';
 import { ScrollingService } from '../utils/scrolling/scrolling-service';
 import { ClrCommonStrings } from '../utils/i18n/common-strings.interface';
+import { UNIQUE_ID, UNIQUE_ID_PROVIDER } from '../utils/id-generator/id-generator.service';
 
 @Component({
   selector: 'clr-modal',
@@ -41,9 +43,11 @@ import { ClrCommonStrings } from '../utils/i18n/common-strings.interface';
       transition('* => void', [animate('0.2s ease-in-out', style({ opacity: 0 }))]),
     ]),
   ],
+  providers: [UNIQUE_ID_PROVIDER],
 })
 export class ClrModal implements OnChanges, OnDestroy {
   @ViewChild(FocusTrapDirective) focusTrap: FocusTrapDirective;
+
   @HostBinding('class.open')
   @Input('clrModalOpen')
   _open: boolean = false;
@@ -51,7 +55,7 @@ export class ClrModal implements OnChanges, OnDestroy {
 
   @Input('clrModalClosable') closable: boolean = true;
   @Input('clrModalSize') size: string;
-  @Input('clrModalStaticBackdrop') staticBackdrop: boolean = false;
+  @Input('clrModalStaticBackdrop') staticBackdrop: boolean = true;
   @Input('clrModalSkipAnimation') skipAnimation: string = 'false';
 
   // presently this is only used by wizards
@@ -59,7 +63,11 @@ export class ClrModal implements OnChanges, OnDestroy {
   @Input('clrModalPreventClose') stopClose: boolean = false;
   @Output('clrModalAlternateClose') altClose: EventEmitter<boolean> = new EventEmitter<boolean>(false);
 
-  constructor(private _scrollingService: ScrollingService, public commonStrings: ClrCommonStrings) {}
+  constructor(
+    private _scrollingService: ScrollingService,
+    public commonStrings: ClrCommonStrings,
+    @Inject(UNIQUE_ID) public modalId: string
+  ) {}
 
   get sizeClass(): string {
     if (this.size) {
@@ -85,7 +93,7 @@ export class ClrModal implements OnChanges, OnDestroy {
   }
 
   open(): void {
-    if (this._open === true) {
+    if (this._open) {
       return;
     }
     this._open = true;
@@ -98,7 +106,7 @@ export class ClrModal implements OnChanges, OnDestroy {
       this.altClose.emit(false);
       return;
     }
-    if (!this.closable || this._open === false) {
+    if (!this.closable || !this._open) {
       return;
     }
     this._open = false;

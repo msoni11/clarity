@@ -8,22 +8,18 @@
 // Bootstrap 4 Dependencies - Begin Part 2
 // NOTE: These are here b/c they need to be overwritable for the $grid-breakpoints map in a theme.
 // @deprecated Bootstrap dependencies are deprecated since 1.0. Remove before 2.0.
-@import 'bootstrap/scss/media';
-@import 'bootstrap/scss/utilities';
-@import 'bootstrap/scss/images';
-@import 'bootstrap/scss/list-group';
-@import 'bootstrap/scss/close';
-@import 'bootstrap/scss/grid';
-@import 'bootstrap/scss/responsive-embed';
+@import '../utils/bootstrap/media';
+@import '../utils/bootstrap/utilities';
+@import '../utils/bootstrap/images';
+@import '../utils/bootstrap/list-group';
+@import '../utils/bootstrap/close';
+@import '../utils/bootstrap/responsive-embed';
 
 // Clarity scss maps w/ overridable variables per component
 @import 'maps.clarity';
 
 //Reboot
 @import '../utils/reboot.clarity'; // depends on variables.clarity, mixins.clarity, color.clarity, helpers.clarity
-
-//@import "./media/media.clarity"; //Deleted
-//@import "./utils/utilities.clarity"; // deleted
 
 //Popover
 @import '../popover/common/popover.clarity';
@@ -47,14 +43,9 @@
 //depends on variables.clarity, mixins.clarity, color.clarity, icons.clarity, buttons.clarity
 @import '../emphasis/alert/alert.clarity';
 
-//List Group
-//@import "./list-group/list-group.clarity"; // deleted
-
 //Cards
 //depends on variables.clarity, mixins.clarity, color.clarity, helpers.clarity, list-group.clarity, buttons.clarity
 @import '../layout/card.clarity';
-
-//@import "./custom-forms-deprecated/custom-forms-deprecated.clarity"; // deleted
 
 //Dropdowns
 //depends on variables.clarity, mixins.clarity, color.clarity, helpers.clarity, layers.clarity
@@ -66,7 +57,6 @@
 
 //Grid
 //depends on variables.clarity, mixins.clarity
-@import '../layout/grid-deprecated.clarity';
 @import '../layout/grid/grid.clarity';
 
 //Lists
@@ -141,7 +131,7 @@
 @import '../data/tree-view/tree-view.clarity';
 
 //Datagrid
-//depends on variables.clarity, mixins.clarity, helpers.clarity, layers, icons.clarity, tables.clarity
+//depends on variables.clarity, mixins.clarity, helpers.clarity, layers, icons.clarity, tables.clarity, forms.clarity
 @import '../data/datagrid/datagrid.clarity';
 
 //Animations
@@ -164,3 +154,6 @@
 
 // Signposts
 @import '../popover/signpost/signposts.clarity';
+
+// Drag and Drop
+@import '../utils/drag-and-drop/drag-and-drop.clarity';

@@ -9,19 +9,23 @@ import { Component } from '@angular/core';
   templateUrl: './radios.demo.html',
 })
 export class RadiosDemo {
+  disabled = true;
   vertical = {
     one: '',
     two: '',
     three: '',
+    four: '',
   };
   horizontal = {
     one: '',
     two: '',
     three: '',
+    four: '',
   };
   compact = {
     one: '',
     two: '',
     three: '',
+    four: '',
   };
 }

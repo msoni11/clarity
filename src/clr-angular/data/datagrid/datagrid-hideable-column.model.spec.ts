@@ -3,17 +3,17 @@
  * This software is released under MIT license.
  * The full license information can be found in LICENSE in the root directory of this project.
  */
-import { Component, TemplateRef, ViewChild } from '@angular/core';
+import { Component, Renderer2, TemplateRef, ViewChild } from '@angular/core';
 
 import { ClrDatagridColumn } from './datagrid-column';
 import { DatagridHideableColumnModel } from './datagrid-hideable-column.model';
 import { TestContext } from './helpers.spec';
-import { DragDispatcher } from './providers/drag-dispatcher';
 import { FiltersProvider } from './providers/filters';
 import { Page } from './providers/page';
 import { Sort } from './providers/sort';
 import { StateDebouncer } from './providers/state-debouncer.provider';
-import { DomAdapter } from './render/dom-adapter';
+import { TableSizeService } from './providers/table-size.service';
+import { DomAdapter } from '../../utils/dom-adapter/dom-adapter';
 import { DatagridRenderOrganizer } from './render/render-organizer';
 
 const PROVIDERS_NEEDED = [
@@ -21,9 +21,10 @@ const PROVIDERS_NEEDED = [
   FiltersProvider,
   DatagridRenderOrganizer,
   DomAdapter,
-  DragDispatcher,
   Page,
   StateDebouncer,
+  TableSizeService,
+  Renderer2,
 ];
 
 export default function(): void {

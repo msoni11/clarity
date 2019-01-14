@@ -3,7 +3,7 @@
  * This software is released under MIT license.
  * The full license information can be found in LICENSE in the root directory of this project.
  */
-import { TestBed } from '@angular/core/testing';
+import { TestBed, async } from '@angular/core/testing';
 import { FormsModule, NgControl, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 
@@ -13,6 +13,7 @@ import { IfErrorService } from '../common/if-error/if-error.service';
 
 import { NgControlService } from '../common/providers/ng-control.service';
 import { Layouts, LayoutService } from '../common/providers/layout.service';
+import { MarkControlService } from '../common/providers/mark-control.service';
 
 export function ContainerNoLabelSpec(testContainer, testControl, testComponent): void {
   describe('no label', () => {
@@ -21,7 +22,7 @@ export function ContainerNoLabelSpec(testContainer, testControl, testComponent):
       TestBed.configureTestingModule({
         imports: [ClrIconModule, ClrCommonFormsModule, FormsModule],
         declarations: [testContainer, testControl, testComponent],
-        providers: [NgControl, NgControlService, IfErrorService, LayoutService],
+        providers: [NgControl, NgControlService, IfErrorService, LayoutService, MarkControlService],
       });
       fixture = TestBed.createComponent(testComponent);
 
@@ -31,13 +32,13 @@ export function ContainerNoLabelSpec(testContainer, testControl, testComponent):
     });
 
     it('adds an empty label when instantiated without vertical layout', () => {
-      layoutService.layout = Layouts.HORIZONTAL;
       fixture.detectChanges();
       const labels = containerEl.querySelectorAll('label');
       expect(Array.prototype.filter.call(labels, label => label.textContent === '').length).toBe(1);
     });
 
-    it('does not add an empty label when instantiated without vertical layout', () => {
+    it('does not add an empty label when instantiated with vertical layout', () => {
+      layoutService.layout = Layouts.VERTICAL;
       fixture.detectChanges();
       const labels = containerEl.querySelectorAll('label');
       expect(Array.prototype.filter.call(labels, label => label.textContent === '').length).toBe(0);
@@ -55,7 +56,7 @@ export function ReactiveSpec(testContainer, testControl, testComponent, wrapperC
 
 function fullSpec(description, testContainer, directives: any | any[], testComponent, wrapperClass) {
   describe(description, () => {
-    let fixture, containerDE, container, containerEl, ifErrorService, layoutService;
+    let fixture, containerDE, container, containerEl, ifErrorService, layoutService, markControlService;
     if (!Array.isArray(directives)) {
       directives = [directives];
     }
@@ -63,7 +64,7 @@ function fullSpec(description, testContainer, directives: any | any[], testCompo
       TestBed.configureTestingModule({
         imports: [ClrIconModule, ClrCommonFormsModule, FormsModule, ReactiveFormsModule],
         declarations: [testContainer, ...directives, testComponent],
-        providers: [NgControl, NgControlService, IfErrorService, LayoutService],
+        providers: [NgControl, NgControlService, IfErrorService, LayoutService, MarkControlService],
       });
       fixture = TestBed.createComponent(testComponent);
 
@@ -71,13 +72,14 @@ function fullSpec(description, testContainer, directives: any | any[], testCompo
       container = containerDE.componentInstance;
       containerEl = containerDE.nativeElement;
       ifErrorService = containerDE.injector.get(IfErrorService);
+      markControlService = containerDE.injector.get(MarkControlService);
       layoutService = containerDE.injector.get(LayoutService);
       fixture.detectChanges();
     });
 
     it('injects the layoutService', () => {
       expect(layoutService).toBeTruthy();
-      expect(layoutService.layout).toEqual(Layouts.VERTICAL);
+      expect(layoutService.layout).toEqual(Layouts.HORIZONTAL);
     });
 
     it('injects the ifErrorService and subscribes', () => {
@@ -127,39 +129,52 @@ function fullSpec(description, testContainer, directives: any | any[], testCompo
     });
 
     it('adds the .clr-row class to the host on non-vertical layouts', () => {
-      expect(containerEl.classList).not.toContain('clr-row');
-      layoutService.layout = Layouts.HORIZONTAL;
-      fixture.detectChanges();
       expect(containerEl.classList).toContain('clr-row');
+      layoutService.layout = Layouts.VERTICAL;
+      fixture.detectChanges();
+      expect(containerEl.classList).not.toContain('clr-row');
       layoutService.layout = Layouts.COMPACT;
       fixture.detectChanges();
       expect(containerEl.classList).toContain('clr-row');
     });
 
-    it('computes the error class for the control container', () => {
-      expect(container.controlClass()).toEqual('');
+    it('adds the error class for the control container', () => {
+      expect(container.controlClass()).not.toContain('clr-error');
       container.invalid = true;
-      expect(container.controlClass()).toEqual('clr-error');
+      expect(container.controlClass()).toContain('clr-error');
     });
 
-    it('computes the grid class for the control container when not vertical', () => {
-      expect(container.controlClass()).toEqual('');
-      layoutService.layout = Layouts.HORIZONTAL;
-      expect(container.controlClass()).toContain('clr-col-xs-12');
+    it('adds the grid class for the control container when not vertical', () => {
+      expect(container.controlClass()).toContain('clr-col-12');
+      layoutService.layout = Layouts.VERTICAL;
+      expect(container.controlClass()).not.toContain('clr-col-12');
     });
 
     it('tracks the validity of the form control', () => {
       expect(container.invalid).toBeFalse();
-      ifErrorService.triggerStatusChange();
+      markControlService.markAsDirty();
       fixture.detectChanges();
       expect(container.invalid).toBeTrue();
     });
 
-    it('cleans up on destroy', () => {
-      expect(container.subscriptions).toBeDefined();
-      spyOn(container.subscriptions[0], 'unsubscribe');
-      container.ngOnDestroy();
-      expect(container.subscriptions[0].unsubscribe).toHaveBeenCalled();
+    it('tracks the disabled state', async(() => {
+      const test = fixture.debugElement.componentInstance;
+      test.disabled = true;
+      fixture.detectChanges();
+      // Have to wait for the whole control to settle or it doesn't track
+      fixture.whenStable().then(() => {
+        expect(containerEl.className).not.toContain('clr-form-control-disabled');
+        if (test.form) {
+          // Handle setting disabled based on reactive form
+          test.form.get('model').reset({ value: '', disabled: true });
+        }
+        fixture.detectChanges();
+        expect(containerEl.className).toContain('clr-form-control-disabled');
+      });
+    }));
+
+    it('implements ngOnDestroy', () => {
+      expect(container.ngOnDestroy).toBeDefined();
     });
   });
 }

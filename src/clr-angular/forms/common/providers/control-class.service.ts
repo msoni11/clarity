@@ -10,14 +10,27 @@ import { Injectable } from '@angular/core';
 export class ControlClassService {
   className = '';
 
-  controlClass(invalid = false, grid = false) {
-    const controlClasses = [];
+  controlClass(invalid = false, grid = false, additional = '') {
+    const controlClasses = [this.className, additional];
     if (invalid) {
       controlClasses.push('clr-error');
     }
     if (grid && this.className.indexOf('clr-col') === -1) {
-      controlClasses.push('clr-col-md-10 clr-col-xs-12');
+      controlClasses.push('clr-col-md-10 clr-col-12');
     }
-    return controlClasses.join(' ');
+    return controlClasses.join(' ').trim();
+  }
+
+  // We want to remove the column classes from the input up to the container
+  initControlClass(renderer, element: HTMLElement) {
+    if (element && element.className) {
+      this.className = element.className;
+      const klasses = element.className.split(' ');
+      klasses.forEach(klass => {
+        if (klass.startsWith('clr-col')) {
+          renderer.removeClass(element, klass);
+        }
+      });
+    }
   }
 }

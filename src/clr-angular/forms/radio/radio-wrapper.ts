@@ -4,10 +4,9 @@
  * The full license information can be found in LICENSE in the root directory of this project.
  */
 
-import { Component, Optional, ContentChild } from '@angular/core';
+import { Component, ContentChild, OnInit } from '@angular/core';
 
 import { DynamicWrapper } from '../../utils/host-wrapping/dynamic-wrapper';
-import { ControlClassService } from '../common/providers/control-class.service';
 import { ControlIdService } from '../common/providers/control-id.service';
 import { ClrLabel } from '../common/label';
 
@@ -23,17 +22,16 @@ import { ClrLabel } from '../common/label';
   },
   providers: [ControlIdService],
 })
-export class ClrRadioWrapper implements DynamicWrapper {
+export class ClrRadioWrapper implements DynamicWrapper, OnInit {
   // We need both _dynamic for HostWrapper and ContentChild(ClrLabel) in cases where
   // the user puts a radio inside a wrapper without a label, host wrapping doesn't apply
   // but we'd still need to insert a label
   _dynamic = false;
   @ContentChild(ClrLabel) label: ClrLabel;
-  hasContainer = false;
 
-  constructor(@Optional() public controlClassService: ControlClassService) {
-    if (controlClassService) {
-      this.hasContainer = true;
+  ngOnInit() {
+    if (this.label) {
+      this.label.disableGrid();
     }
   }
 }

@@ -63,10 +63,12 @@
       display: inline-block;
     }
 
-    input[type='checkbox'].clr-indeterminate + label::before {
+    input[type='checkbox'].clr-indeterminate + label::before,
+    input[type='checkbox']:indeterminate + label::before {
       border: $clr-default-borderwidth solid $clr-forms-checkbox-indeterminate-border-color;
     }
-    input[type='checkbox'].clr-indeterminate + label::after {
+    input[type='checkbox'].clr-indeterminate + label::after,
+    input[type='checkbox']:indeterminate + label::after {
       border-left: none;
       border-bottom-color: $clr-forms-checkbox-indeterminate-border-color;
       display: inline-block;
@@ -76,6 +78,10 @@
     &.clr-checkbox-inline {
       @include form-inline-input();
     }
+  }
+
+  .clr-error .clr-checkbox-wrapper input[type='checkbox'] + label::before {
+    border-color: $clr-forms-invalid-color;
   }
 
   .clr-form-control-disabled .clr-checkbox-wrapper {
@@ -91,7 +97,8 @@
       border-bottom: $disabled-border-style;
     }
 
-    input[type='checkbox']:checked.clr-indeterminate + label::after {
+    input[type='checkbox']:checked.clr-indeterminate + label::after,
+    input[type='checkbox']:checked:indeterminate + label::after {
       border-left: none;
     }
   }

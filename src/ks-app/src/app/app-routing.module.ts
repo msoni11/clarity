@@ -12,7 +12,7 @@ import { KSCards } from './containers/cards/cards.component';
 import { KSColors } from './containers/colors/colors.component';
 import { KSDatagrid } from './containers/data/datagrid.component';
 import { KSStackView } from './containers/data/stackview.component';
-import { KSTreeView } from './containers/data/tree-view.component';
+import { KSDragAndDrop } from './containers/drag-and-drop/dnd.component';
 import { KSAlerts } from './containers/emphasis/alerts.component';
 import { KSBadges } from './containers/emphasis/badges.component';
 import { KSLabels } from './containers/emphasis/labels.component';
@@ -46,6 +46,8 @@ import { KSTables } from './containers/tables/tables.component';
 import { KSTypography } from './containers/typography/typography.component';
 import { KSWizards } from './containers/wizard/wizards.component';
 import { KSToggle } from './containers/forms/toggle.component';
+import { KSPasswords } from './containers/forms/password.component';
+import { KSTextareas } from './containers/forms/textarea.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'alerts', pathMatch: 'full' },
@@ -55,8 +57,8 @@ export const routes: Routes = [
   { path: 'cards', component: KSCards, data: { state: 'cards' } },
   { path: 'colors', component: KSColors, data: { state: 'colors' } },
   { path: 'datagrids', component: KSDatagrid, data: { state: 'datagrids' } },
+  { path: 'drag-and-drop', component: KSDragAndDrop, data: { state: 'drag-and-drop' } },
   { path: 'stackviews', component: KSStackView, data: { state: 'stackviews' } },
-  { path: 'treeviews', component: KSTreeView, data: { state: 'treeviews' } },
   { path: 'labels', component: KSLabels, data: { state: 'labels' } },
   { path: 'lists', component: KSLists, data: { state: 'lists' } },
   { path: 'login', component: KSLogin, data: { state: 'login' } },
@@ -67,6 +69,8 @@ export const routes: Routes = [
   { path: 'inputs', component: KSInputs, data: { state: 'inputs' } },
   { path: 'radios', component: KSRadios, data: { state: 'radios' } },
   { path: 'selects', component: KSSelects, data: { state: 'selects' } },
+  { path: 'passwords', component: KSPasswords, data: { state: 'passwords' } },
+  { path: 'textareas', component: KSTextareas, data: { state: 'textareas' } },
   { path: 'modals', component: KSModals, data: { state: 'modals' } },
   { path: 'tabs', component: KSTabs, data: { state: 'tabs' } },
   { path: 'toggle', component: KSToggle, data: { state: 'toggle' } },
